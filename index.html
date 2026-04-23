@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WinWithK Options Trading</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: #f1f5f9;
+    text-align: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #065f46);
+    background-size: 400% 400%;
+    animation: gradient 12s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+header {
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.4);
+}
+
+.hero {
+    padding: 90px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    color: #22c55e;
+}
+
+.hero p {
+    max-width: 600px;
+    margin: auto;
+    color: #cbd5f5;
+}
+
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 14px 25px;
+    background: linear-gradient(45deg, #22c55e, #4ade80);
+    color: #020617;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.btn:hover { transform: scale(1.05); }
+
+.section {
+    padding: 60px 20px;
+    background: rgba(0,0,0,0.5);
+}
+
+.card {
+    background: rgba(15, 23, 42, 0.8);
+    margin: 10px;
+    padding: 20px;
+    width: 220px;
+    display: inline-block;
+    border-radius: 12px;
+}
+
+.signal {
+    background: rgba(15, 23, 42, 0.9);
+    padding: 20px;
+    margin: 15px auto;
+    max-width: 400px;
+    border-radius: 12px;
+    border: 2px solid #22c55e;
+}
+
+.buy { color: #22c55e; font-weight: bold; }
+.sell { color: #ef4444; font-weight: bold; }
+
+footer {
+    padding: 20px;
+    font-size: 14px;
+    background: rgba(0,0,0,0.6);
+    color: #94a3b8;
+}
+
+/* BOT */
+#chatBox {
+    background:#0f172a;
+    border:1px solid #22c55e;
+    border-radius:12px;
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#chatLog {
+    height:200px;
+    overflow:auto;
+    padding:10px;
+    font-size:13px;
+}
+
+#chatInput {
+    padding:10px;
+    border:none;
+    outline:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>WinWithK Options Trading 🚀</header>
+
+<!-- HERO -->
+<div class="hero">
+<h1>Trade Smarter. Grow Faster 💹</h1>
+<p>Live signals, smart analysis, and trading insights.</p>
+
+<a class="btn" href="https://t.me/WinWithKOptions" target="_blank">Join Telegram</a>
+<a class="btn" href="https://www.instagram.com/winwithkoptions/" target="_blank">Instagram</a>
+</div>
+
+<!-- SIGNALS -->
+<div class="section">
+<h2>Today's Signals 🎯</h2>
+<div id="signalsContainer">Loading signals...</div>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+<h2>Why Join Us?</h2>
+<div class="card">📊 Daily Setups</div>
+<div class="card">📈 Analysis</div>
+<div class="card">💰 Profit Ideas</div>
+</div>
+
+<!-- BOT -->
+<div style="position:fixed; bottom:20px; right:20px; width:300px; z-index:9999;">
+
+<div id="chatBox">
+<div style="padding:10px; background:#020617; font-weight:bold;">
+WinWithK Bot 🤖
+</div>
+
+<div id="chatLog"></div>
+
+<input id="chatInput" placeholder="Ask: nifty, entry, banknifty">
+</div>
+
+<button onclick="toggleChat()" style="
+margin-top:10px;
+width:100%;
+padding:12px;
+background:#22c55e;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;">
+💬 Smart Bot
+</button>
+
+</div>
+
+<footer>© 2026 WinWithK | All Rights Reserved</footer>
+
+<!-- DISCLAIMER -->
+<div id="disclaimerPopup" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;">
+<div style="background:#020617;padding:30px;border-radius:12px;max-width:500px;">
+<h2 style="color:#22c55e;">Disclaimer ⚠️</h2>
+<p>Educational purpose only. Trading involves risk.</p>
+<button onclick="acceptDisclaimer()" class="btn">I Understand</button>
+</div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+let apiURL = "https://script.google.com/macros/s/AKfycbylS8e33janR7wTxVbFftyVbvOdbQSXdXW7JzhOx3k-4E01BKghj2Hs1yVNpgJTpK1s/exec";
+
+/* LOAD SIGNALS */
+async function loadSignals(){
+try{
+let res = await fetch(apiURL);
+let data = await res.json();
+
+let container = document.getElementById("signalsContainer");
+container.innerHTML = "";
+
+data.reverse().forEach(s => {
+container.innerHTML += `
+<div class="signal">
+<p class="${s.Type?.includes("SELL") ? "sell":"buy"}">${s.Type || "-"}</p>
+<p>Strike: ${s.Strike || "-"}</p>
+<p>Entry: ${s.Entry || "-"}</p>
+<p>Target: ${s.Target || "-"}</p>
+<p>SL: ${s.SL || "-"}</p>
+</div>`;
+});
+
+}catch(e){
+document.getElementById("signalsContainer").innerHTML="Error loading signals";
+}}
+
+loadSignals();
+setInterval(loadSignals,30000);
+
+/* BOT */
+function toggleChat(){
+let box=document.getElementById("chatBox");
+box.style.display = box.style.display==="flex"?"none":"flex";
+box.style.flexDirection="column";
+}
+
+document.getElementById("chatInput").addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+let msg=this.value;
+this.value="";
+
+let log=document.getElementById("chatLog");
+log.innerHTML+="<div>You: "+msg+"</div>";
+
+setTimeout(()=>{
+log.innerHTML+="<div style='color:#22c55e'>Bot: "+getReply(msg)+"</div>";
+},300);
+}
+});
+
+function getReply(msg){
+msg=msg.toLowerCase();
+
+if(msg.includes("nifty")) return "NIFTY is in range, wait breakout.";
+if(msg.includes("entry")) return "Enter after confirmation candle.";
+if(msg.includes("buy")) return "Check support + EMA.";
+if(msg.includes("sell")) return "Avoid selling in strong trend.";
+if(msg.includes("banknifty")) return "High volatility, use SL.";
+
+return "Ask: nifty, entry, buy, sell";
+}
+
+/* DISCLAIMER */
+function acceptDisclaimer(){
+localStorage.setItem("ok","1");
+document.getElementById("disclaimerPopup").style.display="none";
+}
+
+window.onload=function(){
+if(!localStorage.getItem("ok")){
+document.getElementById("disclaimerPopup").style.display="flex";
+}
+};
+
+</script>
+
+</body>
+</html>
